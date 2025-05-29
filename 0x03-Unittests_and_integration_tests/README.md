@@ -58,9 +58,11 @@ This project focuses on **unit testing** and **integration testing** in Python, 
 ## **How to Run the Tests**
 Execute the tests using:
 ```bash
-python test_utils.py 
+python test_utils.py
+python test_client.py
 ```
 For a detailed test output, use the verbose mode option:
 ```bash
 python test_utils.py -v
+python test_client.py -v
 ```
