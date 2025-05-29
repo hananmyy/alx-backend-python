@@ -13,7 +13,7 @@ class TestGithubOrgClient(unittest.TestCase):
 
     @parameterized.expand([
         ("google", {"repos_url": "https://api.github.com/orgs/google/repos"}),
-        ("abc", {"repos_url": "https://api.github.com/orgs/abc/repos"}),
+        ("abc", {"repos_url": "https://api.github.com/orgs/abc/repos"})
     ])
     @patch("client.get_json")
     def test_org(self, org_name, expected_output, mock_get_json):
@@ -26,9 +26,9 @@ class TestGithubOrgClient(unittest.TestCase):
     @patch("client.GithubOrgClient._public_repos_url", new_callable=PropertyMock)
     def test_public_repos_url(self, mock_public_repos_url):
         """Test _public_repos_url property"""
-        mock_public_repos_url.return_value = "https://api.github.com/orgs/google/repos"
+        mock_public_repos_url.return_value = f"https://api.github.com/orgs/google/repos"
         client = GithubOrgClient("google")
-        self.assertEqual(client._public_repos_url, "https://api.github.com/orgs/google/repos")
+        self.assertEqual(client._public_repos_url, f"https://api.github.com/orgs/google/repos")
 
 
 # More patching
@@ -38,12 +38,12 @@ class TestGithubOrgClientPublicRepos(unittest.TestCase):
     @patch("client.get_json", return_value=[
         {"name": "repo1", "license": {"key": "MIT"}},
         {"name": "repo2", "license": {"key": "Apache-2.0"}},
-        {"name": "repo3", "license": None},
+        {"name": "repo3", "license": None}
     ])
     @patch("client.GithubOrgClient._public_repos_url", new_callable=PropertyMock)
     def test_public_repos(self, mock_repos_url, mock_get_json):
         """Test public_repos method"""
-        mock_repos_url.return_value = "https://api.github.com/orgs/google/repos"
+        mock_repos_url.return_value = f"https://api.github.com/orgs/google/repos"
         client = GithubOrgClient("google")
 
         # Test all public repos
@@ -66,8 +66,8 @@ class TestGithubOrgClientHasLicense(unittest.TestCase):
     @parameterized.expand([
         ({"license": {"key": "my_license"}}, "my_license", True),
         ({"license": {"key": "other_license"}}, "my_license", False),
-        ({"license": {}}, "my_license", False),
-        ({}, "my_license", False)
+        ({"license": {}}, "my_license", False),  # Edge case: Empty dict
+        ({}, "my_license", False)  # Edge case: Missing license key
     ])
     def test_has_license(self, repo, license_key, expected):
         """Test has_license behavior"""
@@ -90,9 +90,9 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         cls.mock_get = cls.get_patcher.start()
 
         def side_effect(url):
-            if url == "https://api.github.com/orgs/google":
+            if url == f"https://api.github.com/orgs/google":
                 return MockResponse(cls.org_payload)
-            elif url == "https://api.github.com/orgs/google/repos":
+            elif url == f"https://api.github.com/orgs/google/repos":
                 return MockResponse(cls.repos_payload)
             return MockResponse({})
 
@@ -115,7 +115,7 @@ class MockResponse:
     def __init__(self, json_data=None):
         """
         Initialize MockResponse with a JSON payload.
-        
+
         Args:
             json_data (dict, optional): The mock JSON response data.
         """
