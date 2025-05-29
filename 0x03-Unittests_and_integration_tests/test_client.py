@@ -7,6 +7,30 @@ from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient
 
 
+# Unit test for GithubOrgClient.org
+class TestGithubOrgClient(unittest.TestCase):
+    """Unit tests for GithubOrgClient"""
+
+    @parameterized.expand([
+        ("google", {"repos_url": "https://api.github.com/orgs/google/repos"}),
+        ("abc", {"repos_url": "https://api.github.com/orgs/abc/repos"}),
+    ])
+    @patch("client.get_json")
+    def test_org(self, org_name, expected_output, mock_get_json):
+        """Test GithubOrgClient.org method"""
+        mock_get_json.return_value = expected_output
+        client = GithubOrgClient(org_name)
+        self.assertEqual(client.org, expected_output)
+        mock_get_json.assert_called_once_with(f"https://api.github.com/orgs/{org_name}")
+
+    @patch("client.GithubOrgClient._public_repos_url", new_callable=PropertyMock)
+    def test_public_repos_url(self, mock_public_repos_url):
+        """Test _public_repos_url property"""
+        mock_public_repos_url.return_value = "https://api.github.com/orgs/google/repos"
+        client = GithubOrgClient("google")
+        self.assertEqual(client._public_repos_url, "https://api.github.com/orgs/google/repos")
+
+
 # More patching
 class TestGithubOrgClientPublicRepos(unittest.TestCase):
     """Unit-test GithubOrgClient.public_repos"""
@@ -16,9 +40,10 @@ class TestGithubOrgClientPublicRepos(unittest.TestCase):
         {"name": "repo2", "license": {"key": "Apache-2.0"}},
         {"name": "repo3", "license": None},
     ])
-    @patch("client.GithubOrgClient._public_repos_url", new_callable=PropertyMock, return_value="https://api.github.com/orgs/google/repos")
+    @patch("client.GithubOrgClient._public_repos_url", new_callable=PropertyMock)
     def test_public_repos(self, mock_repos_url, mock_get_json):
         """Test public_repos method"""
+        mock_repos_url.return_value = "https://api.github.com/orgs/google/repos"
         client = GithubOrgClient("google")
 
         # Test all public repos
@@ -41,6 +66,8 @@ class TestGithubOrgClientHasLicense(unittest.TestCase):
     @parameterized.expand([
         ({"license": {"key": "my_license"}}, "my_license", True),
         ({"license": {"key": "other_license"}}, "my_license", False),
+        ({"license": {}}, "my_license", False),
+        ({}, "my_license", False)
     ])
     def test_has_license(self, repo, license_key, expected):
         """Test has_license behavior"""
@@ -86,9 +113,16 @@ class MockResponse:
     """Mock requests.get response"""
 
     def __init__(self, json_data=None):
+        """
+        Initialize MockResponse with a JSON payload.
+        
+        Args:
+            json_data (dict, optional): The mock JSON response data.
+        """
         self.json_data = json_data if json_data is not None else {}
 
     def json(self):
+        """Return the mock JSON response."""
         return self.json_data
 
 
