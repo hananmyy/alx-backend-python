@@ -2,6 +2,7 @@
 """Unit tests and integration tests for GithubOrgClient"""
 
 import unittest
+from fixtures import TEST_PAYLOAD
 from unittest.mock import patch, PropertyMock
 from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient
@@ -75,10 +76,13 @@ class TestGithubOrgClientHasLicense(unittest.TestCase):
 
 
 @parameterized_class([
-    {"org_payload": {"repos_url": "https://api.github.com/orgs/google/repos"},
-     "repos_payload": [{"name": "repo1"}, {"name": "repo2"}],
-     "expected_repos": ["repo1", "repo2"],
-     "apache2_repos": []}
+    {"org_payload": TEST_PAYLOAD[0][0],  # Organization data
+     "repos_payload": TEST_PAYLOAD[0][1],  # List of repos
+     "expected_repos": [repo["name"] for repo in TEST_PAYLOAD[0][1]],
+     "apache2_repos": [
+         repo["name"] for repo in TEST_PAYLOAD[0][1]
+         if repo.get("license", {}).get("key") == "Apache-2.0"
+     ]}
 ])
 class TestIntegrationGithubOrgClient(unittest.TestCase):
     """Integration tests for GithubOrgClient"""
