@@ -66,7 +66,7 @@ class TestGithubOrgClientHasLicense(unittest.TestCase):
     @parameterized.expand([
         ({"license": {"key": "my_license"}}, "my_license", True),
         ({"license": {"key": "other_license"}}, "my_license", False),
-        ({"license": {}}, "my_license", False),  # Edge case: Empty dict
+        ({"license": None}, "my_license", False),
         ({}, "my_license", False)  # Edge case: Missing license key
     ])
     def test_has_license(self, repo, license_key, expected):
@@ -89,10 +89,16 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         cls.get_patcher = patch("requests.get")
         cls.mock_get = cls.get_patcher.start()
 
+        # Ensure class attributes exist
+        cls.org_payload = {"repos_url": "https://api.github.com/orgs/google/repos"}
+        cls.repos_payload = [{"name": "repo1"}, {"name": "repo2"}]
+        cls.expected_repos = ["repo1", "repo2"]
+        cls.apache2_repos = []
+
         def side_effect(url):
-            if url == f"https://api.github.com/orgs/google":
+            if url == "https://api.github.com/orgs/google":
                 return MockResponse(cls.org_payload)
-            elif url == f"https://api.github.com/orgs/google/repos":
+            elif url == "https://api.github.com/orgs/google/repos":
                 return MockResponse(cls.repos_payload)
             return MockResponse({})
 
