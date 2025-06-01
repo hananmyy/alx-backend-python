@@ -8,7 +8,6 @@ from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient
 
 
-# Unit test for GithubOrgClient.org
 class TestGithubOrgClient(unittest.TestCase):
     """Unit tests for GithubOrgClient"""
 
@@ -40,9 +39,8 @@ class TestGithubOrgClient(unittest.TestCase):
         )
 
 
-# More patching
 class TestGithubOrgClientPublicRepos(unittest.TestCase):
-    """Unit-test GithubOrgClient.public_repos"""
+    """Unit test for public_repos method"""
 
     @patch("client.get_json", return_value=[
         {"name": "repo1", "license": {"key": "MIT"}},
@@ -70,9 +68,8 @@ class TestGithubOrgClientPublicRepos(unittest.TestCase):
         mock_get_json.assert_called_once()
 
 
-# Parameterized test for has_license
 class TestGithubOrgClientHasLicense(unittest.TestCase):
-    """Unit-test GithubOrgClient.has_license"""
+    """Unit test for has_license"""
 
     @parameterized.expand([
         ({"license": {"key": "my_license"}}, "my_license", True),
@@ -82,7 +79,7 @@ class TestGithubOrgClientHasLicense(unittest.TestCase):
         ({"other_key": "value"}, "my_license", False)
     ])
     def test_has_license(self, repo, license_key, expected):
-        """Test has_license behavior, ensuring proper edge case handling."""
+        """Test has_license logic"""
         self.assertEqual(
             GithubOrgClient.has_license(repo, license_key),
             expected
@@ -99,52 +96,40 @@ class TestGithubOrgClientHasLicense(unittest.TestCase):
     "apache2_repos": ["repo2"]
 }])
 class TestIntegrationGithubOrgClient(unittest.TestCase):
-    """Integration tests for GithubOrgClient"""
+    """Integration test using parameterized_class"""
 
     @classmethod
     def setUpClass(cls):
-        """Mock external requests before tests"""
-        cls.get_patcher = patch("requests.get")
-        cls.mock_get = cls.get_patcher.start()
-
-        cls.org_payload = {"repos_url": "https://api.github.com/orgs/google/repos"}
-        cls.repos_payload = [
-            {"name": "repo1", "license": {"key": "MIT"}},
-            {"name": "repo2", "license": {"key": "Apache-2.0"}}
-        ]
-        cls.expected_repos = ["repo1", "repo2"]
-        cls.apache2_repos = ["repo2"]
+        """Patch get_json for integration test"""
+        cls.get_patcher = patch("client.get_json")
+        cls.mock_get_json = cls.get_patcher.start()
 
         def side_effect(url):
             if url == "https://api.github.com/orgs/google":
-                return MockResponse(cls.org_payload)
+                return cls.org_payload
             elif url == "https://api.github.com/orgs/google/repos":
-                return MockResponse(cls.repos_payload)
-            return MockResponse({})
+                return cls.repos_payload
+            return {}
 
-        cls.mock_get.side_effect = side_effect
+        cls.mock_get_json.side_effect = side_effect
 
     @classmethod
     def tearDownClass(cls):
-        """Stop patching requests.get"""
+        """Stop patching"""
         cls.get_patcher.stop()
 
     def test_public_repos(self):
-        """Test public_repos method with integration"""
+        """Test public_repos returns all repo names"""
         client = GithubOrgClient("google")
         self.assertEqual(client.public_repos(), self.expected_repos)
 
-
-class MockResponse:
-    """Mock requests.get response"""
-
-    def __init__(self, json_data=None):
-        """Initialize MockResponse with a JSON payload."""
-        self.json_data = json_data if json_data is not None else {}
-
-    def json(self):
-        """Return the mock JSON response."""
-        return self.json_data
+    def test_public_repos_with_license(self):
+        """Test public_repos filtered by license"""
+        client = GithubOrgClient("google")
+        self.assertEqual(
+            client.public_repos(license="Apache-2.0"),
+            self.apache2_repos
+        )
 
 
 if __name__ == "__main__":
