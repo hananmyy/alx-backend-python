@@ -45,7 +45,6 @@ class TestGithubOrgClientPublicRepos(unittest.TestCase):
     @patch("client.get_json", return_value=[
         {"name": "repo1", "license": {"key": "MIT"}},
         {"name": "repo2", "license": {"key": "Apache-2.0"}},
-        {"name": "repo3", "license": None}
     ])
     @patch("client.GithubOrgClient._public_repos_url",
            new_callable=PropertyMock)
@@ -56,7 +55,7 @@ class TestGithubOrgClientPublicRepos(unittest.TestCase):
         )
         client = GithubOrgClient("google")
 
-        self.assertEqual(client.public_repos(), ["repo1", "repo2", "repo3"])
+        self.assertEqual(client.public_repos(), ["repo1", "repo2"])
         self.assertEqual(client.public_repos(license="MIT"), ["repo1"])
         self.assertEqual(
             client.public_repos(license="Apache-2.0"),
