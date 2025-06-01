@@ -84,13 +84,16 @@ class TestGithubOrgClient(unittest.TestCase):
         ("abc",)
     ])
     @patch("client.get_json",
-           return_value={"repos_url": "https://api.github.com/orgs/google/repos"})
+       return_value={"repos_url": "https://api.github.com/orgs/google/repos"})
     def test_org(self, org_name, mock_get_json):
         """Test GithubOrgClient.org returns correct value."""
         client = GithubOrgClient(org_name)
         self.assertEqual(client.org,
-                         {"repos_url": "https://api.github.com/orgs/google/repos"})
-        mock_get_json.assert_called_once_with(f"https://api.github.com/orgs/{org_name}")
+                        {"repos_url": "https://api.github.com/orgs/google/repos"})
+        mock_get_json.assert_called_once_with(
+            f"https://api.github.com/orgs/{org_name}"
+        )
+
 
 
 # Mocking a property
@@ -100,11 +103,14 @@ class TestGithubOrgClientRepos(unittest.TestCase):
     @patch("client.GithubOrgClient.org", new_callable=PropertyMock)
     def test_repos(self, mock_org):
         """Test repos property extracts repos_url correctly."""
-        mock_org.return_value = {"repos_url": "https://api.github.com/orgs/google/repos"}
+        mock_org.return_value = {
+            "repos_url": "https://api.github.com/orgs/google/repos"
+        }
         client = GithubOrgClient("google")
-
-        self.assertEqual(client._public_repos_url, "https://api.github.com/orgs/google/repos")
+        self.assertEqual(client._public_repos_url,
+                        "https://api.github.com/orgs/google/repos")
         mock_org.assert_called_once()
+
 
 
 # Ensure proper documentation for MockResponse

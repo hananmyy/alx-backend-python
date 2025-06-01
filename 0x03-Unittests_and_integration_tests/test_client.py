@@ -6,7 +6,6 @@ from fixtures import TEST_PAYLOAD
 from unittest.mock import patch, PropertyMock
 from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient
-from typing import Dict
 
 
 # Unit test for GithubOrgClient.org
