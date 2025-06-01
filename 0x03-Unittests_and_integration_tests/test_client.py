@@ -87,7 +87,9 @@ class TestGithubOrgClientHasLicense(unittest.TestCase):
 
 
 @parameterized_class([{
-    "org_payload": TEST_PAYLOAD[0][0],
+    "org_payload": {
+        "repos_url": "https://api.github.com/orgs/google/repos"
+    },
     "repos_payload": [
         {"name": "repo1", "license": {"key": "MIT"}},
         {"name": "repo2", "license": {"key": "Apache-2.0"}}
