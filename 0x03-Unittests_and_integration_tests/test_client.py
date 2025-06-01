@@ -74,15 +74,7 @@ class TestGithubOrgClientHasLicense(unittest.TestCase):
     ])
     def test_has_license(self, repo, license_key, expected):
         """Test has_license behavior, ensuring proper edge case handling."""
-        self.assertEqual(GithubOrgClient.has_license.__func__(repo, license_key), expected)
-    
-    @staticmethod
-    def has_license(repo: Dict[str, Dict], license_key: str) -> bool:
-        """Check if a repo has the specified license safely."""
-        assert license_key is not None, "license_key cannot be None"
-
-        license = repo.get("license", {})  # Ensures default dict instead of None
-        return license.get("key") == license_key  # Safely accesses license key
+        self.assertEqual(GithubOrgClient.has_license(repo, license_key), expected)
 
 
 
