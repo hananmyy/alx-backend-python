@@ -51,7 +51,8 @@ class GithubOrgClient:
     def has_license(repo: Dict[str, Dict], license_key: str) -> bool:
         """Static: has_license"""
         assert license_key is not None, "license_key cannot be None"
-        license_info = repo.get("license")
-        if not isinstance(license_info, dict):
+        try:
+            has_license = access_nested_map(repo, ("license", "key")) == license_key
+        except KeyError:
             return False
-        return license_info.get("key") == license_key
+        return has_license
