@@ -7,7 +7,6 @@ from utils import access_nested_map, get_json, memoize
 from unittest.mock import patch, MagicMock, PropertyMock
 from client import GithubOrgClient
 
-
 class TestAccessNestedMap(unittest.TestCase):
     """Test cases for access_nested_map function."""
 
@@ -19,7 +18,6 @@ class TestAccessNestedMap(unittest.TestCase):
     def test_access_nested_map(self, nested_map, path, expected):
         """Test access_nested_map returns expected values."""
         self.assertEqual(access_nested_map(nested_map, path), expected)
-
     @parameterized.expand([
         ({}, ("a",)),
         ({"a": 1}, ("a", "b"))
@@ -29,7 +27,6 @@ class TestAccessNestedMap(unittest.TestCase):
         with self.assertRaises(KeyError):
             access_nested_map(nested_map, path)
 
-
 # Mock HTTP calls
 class TestGetJson(unittest.TestCase):
     """Test cases for get_json function."""
@@ -38,6 +35,7 @@ class TestGetJson(unittest.TestCase):
         ("http://example.com", {"payload": True}),
         ("http://holberton.io", {"payload": False})
     ])
+    
     @patch("requests.get")
     def test_get_json(self, test_url, test_payload, mock_get):
         """Test get_json with mocked HTTP request."""
@@ -47,7 +45,6 @@ class TestGetJson(unittest.TestCase):
 
         self.assertEqual(get_json(test_url), test_payload)
         mock_get.assert_called_once_with(test_url)
-
 
 # Parameterize and patch
 class TestMemoize(unittest.TestCase):
@@ -59,7 +56,7 @@ class TestMemoize(unittest.TestCase):
         def a_method(self):
             """Method that simply returns 42."""
             return 42
-
+        
         @memoize
         def a_property(self):
             """Memoized property that calls a_method."""
@@ -73,7 +70,6 @@ class TestMemoize(unittest.TestCase):
             self.assertEqual(test_obj.a_property, 42)  # Second access
 
             mock_method.assert_called_once()  # Ensure a_method is only called once
-
 
 # Parameterize and patch as decorators
 class TestGithubOrgClient(unittest.TestCase):
@@ -94,8 +90,6 @@ class TestGithubOrgClient(unittest.TestCase):
             f"https://api.github.com/orgs/{org_name}"
         )
 
-
-
 # Mocking a property
 class TestGithubOrgClientRepos(unittest.TestCase):
     """Test cases for GithubOrgClient.repos property."""
@@ -110,8 +104,6 @@ class TestGithubOrgClientRepos(unittest.TestCase):
         self.assertEqual(client._public_repos_url,
                         "https://api.github.com/orgs/google/repos")
         mock_org.assert_called_once()
-
-
 
 # Ensure proper documentation for MockResponse
 class MockResponse:
@@ -134,7 +126,6 @@ class MockResponse:
             dict: Simulated JSON response.
         """
         return self.json_data
-
 
 # Run all tests
 if __name__ == "__main__":
