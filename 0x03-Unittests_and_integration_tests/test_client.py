@@ -45,7 +45,7 @@ class TestGithubOrgClientPublicRepos(unittest.TestCase):
     @patch("client.get_json", return_value=[
         {"name": "repo1", "license": {"key": "MIT"}},
         {"name": "repo2", "license": {"key": "Apache-2.0"}},
-        {"name": "repo3", "license": {}}
+        {"name": "repo3", "license": None}
     ])
     @patch("client.GithubOrgClient._public_repos_url",
            new_callable=PropertyMock)
@@ -74,7 +74,7 @@ class TestGithubOrgClientHasLicense(unittest.TestCase):
     @parameterized.expand([
     ({"license": {"key": "my_license"}}, "my_license", True),
     ({"license": {"key": "other_license"}}, "my_license", False),
-    ({"license": {}}, "my_license", False),
+    ({"license": None}, "my_license", False),
     ({}, "my_license", False),
     ({"other_key": "value"}, "my_license", False)
     ])
