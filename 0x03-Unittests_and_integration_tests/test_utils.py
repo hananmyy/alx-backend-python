@@ -74,7 +74,6 @@ class TestMemoize(unittest.TestCase):
             mock_method.assert_called_once()
 
 
-
 class TestGithubOrgClient(unittest.TestCase):
     """Test cases for GithubOrgClient.org method."""
 
