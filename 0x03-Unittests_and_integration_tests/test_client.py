@@ -66,23 +66,15 @@ class TestGithubOrgClientHasLicense(unittest.TestCase):
     """Unit-test GithubOrgClient.has_license"""
 
     @parameterized.expand([
-        ({"license": {"key": "my_license"}}, "my_license", True),  # Matching license
-        ({"license": {"key": "other_license"}}, "my_license", False),  # Different license
-        ({"license": None}, "my_license", False),  # License exists but is None
-        ({}, "my_license", False),  # Missing license key entirely
-        ({"other_key": "value"}, "my_license", False)  # License field doesn't exist at all
+        ({"license": {"key": "my_license"}}, "my_license", True),
+        ({"license": {"key": "other_license"}}, "my_license", False),
+        ({"license": None}, "my_license", False),
+        ({}, "my_license", False),
+        ({"other_key": "value"}, "my_license", False)
     ])
-    @staticmethod
-    def test_has_license(repo: Dict[str, Dict], license_key: str) -> bool:
-        """Check if a repo has the specified license safely."""
-        assert license_key is not None, "license_key cannot be None"
-
-        license = repo.get("license")  # Get license if it exists, otherwise None
-
-        if isinstance(license, dict):  # Ensure license is a dictionary before accessing "key"
-            return license.get("key") == license_key
-
-        return False  # Return False if license is None or not a valid dictionary
+    def test_has_license(self, repo, license_key, expected):
+        """Test has_license behavior, ensuring proper edge case handling."""
+        self.assertEqual(GithubOrgClient.has_license.__func__(repo, license_key), expected)
 
 
 
