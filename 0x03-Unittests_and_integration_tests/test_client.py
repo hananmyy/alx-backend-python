@@ -45,7 +45,7 @@ class TestGithubOrgClientPublicRepos(unittest.TestCase):
     @patch("client.get_json", return_value=[
         {"name": "repo1", "license": {"key": "MIT"}},
         {"name": "repo2", "license": {"key": "Apache-2.0"}},
-        {"name": "repo3", "license": None}
+        {"name": "repo3", "license": {}}
     ])
     @patch("client.GithubOrgClient._public_repos_url",
            new_callable=PropertyMock)
