@@ -65,13 +65,14 @@ class TestGithubOrgClientHasLicense(unittest.TestCase):
     """Unit-test GithubOrgClient.has_license"""
 
     @parameterized.expand([
-        ({"license": {"key": "my_license"}}, "my_license", True),
-        ({"license": {"key": "other_license"}}, "my_license", False),
-        ({"license": None}, "my_license", False),
-        ({}, "my_license", False)  # Edge case: Missing license key
+        ({"license": {"key": "my_license"}}, "my_license", True),  # Matching license
+        ({"license": {"key": "other_license"}}, "my_license", False),  # Different license
+        ({"license": None}, "my_license", False),  # License exists but is None
+        ({}, "my_license", False),  # Missing license key entirely
+        ({"other_key": "value"}, "my_license", False)  # License field doesn't exist at all
     ])
     def test_has_license(self, repo, license_key, expected):
-        """Test has_license behavior"""
+        """Test has_license behavior, ensuring proper edge case handling."""
         self.assertEqual(GithubOrgClient.has_license(repo, license_key), expected)
 
 
