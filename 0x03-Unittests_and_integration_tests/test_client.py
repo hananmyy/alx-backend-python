@@ -6,6 +6,7 @@ from fixtures import TEST_PAYLOAD
 from unittest.mock import patch, PropertyMock
 from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient
+from typing import Dict
 
 
 # Unit test for GithubOrgClient.org
@@ -72,7 +73,7 @@ class TestGithubOrgClientHasLicense(unittest.TestCase):
         ({"other_key": "value"}, "my_license", False)  # License field doesn't exist at all
     ])
     @staticmethod
-    def has_license(repo: Dict[str, Dict], license_key: str) -> bool:
+    def test_has_license(repo: Dict[str, Dict], license_key: str) -> bool:
         """Check if a repo has the specified license safely."""
         assert license_key is not None, "license_key cannot be None"
 
