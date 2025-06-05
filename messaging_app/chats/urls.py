@@ -4,13 +4,14 @@ from rest_framework_nested.routers import NestedDefaultRouter
 from .views import ConversationViewSet, MessageViewSet
 
 # Define main router
-["routers.DefaultRouter()"].register(r'conversations', ConversationViewSet, basename="conversations")
+router = DefaultRouter()
+router.register(r'conversations', ConversationViewSet, basename="conversations")
 
 # Define nested router for messages within conversations
-nested_router = NestedDefaultRouter(["routers.DefaultRouter()"], r'conversations', lookup='conversation')
+nested_router = NestedDefaultRouter(router, r'conversations', lookup='conversation')
 nested_router.register(r'messages', MessageViewSet, basename="conversation-messages")
 
 urlpatterns = [
-    path('', include(["routers.DefaultRouter()"].urls)),  # Include main router
+    path('', include(router.urls)),  # Include main router
     path('', include(nested_router.urls)),  # Include nested routes
 ]
