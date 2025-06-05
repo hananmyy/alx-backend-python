@@ -16,7 +16,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
     filter_backends = [filters.SearchFilter]
-    search_fields = ['participants__username']  # Allow searching by username
+    search_fields = ['participants__username']
     permission_classes = [IsAuthenticated, IsParticipantOfConversation]
 
     def get_queryset(self):
@@ -31,7 +31,6 @@ class ConversationViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
@@ -43,10 +42,18 @@ class MessageViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """ Ensure users can retrieve messages they sent or received """
+        conversation_id = self.kwargs.get('conversation_pk')  # Get conversation ID from URL
+        if not conversation_id:
+            return Response({"error": "Conversation ID is required"}, status=status.HTTP_403_FORBIDDEN)
+
         return Message.objects.filter(conversation__participants__in=[self.request.user])
 
     def create(self, request, *args, **kwargs):
         """ Custom create method for sending messages """
+        conversation_id = self.kwargs.get('conversation_pk')
+        if not conversation_id:
+            return Response({"error": "Conversation ID is required"}, status=status.HTTP_403_FORBIDDEN)
+
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
