@@ -33,11 +33,7 @@ def inbox(request):
 
 @login_required
 def unread_inbox(request):
-    unread_messages = (
-        Message.objects
-        .filter(receiver=request.user, read=False)
-        .only('id', 'content', 'sender')  # ✅ Includes .only()
-    )
+    unread_messages = Message.unread.for_user(request.user)
     return render(request, "messaging/unread.html", {"unread_messages": unread_messages})
 
 
