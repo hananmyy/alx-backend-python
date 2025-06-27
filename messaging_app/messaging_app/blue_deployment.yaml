@@ -1,0 +1,38 @@
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: messaging-app-blue
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: messaging-app-blue
+  template:
+    metadata:
+      labels:
+        app: messaging-app-blue
+    spec:
+      containers:
+        - name: messagingapp-container
+          image: hananmyy/messaging_app:2.0
+          ports:
+            - containerPort: 8000
+
+
+
+---
+
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: messaging-service
+spec:
+  type: ClusterIP
+  selector:
+    app: messaging-app-blue
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000

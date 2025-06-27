@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -e  # Exit on error
+
+echo "🔍 Checking for Minikube..."
+if ! command -v minikube &>/dev/null; then
+  echo "Minikube is not installed. Please install it first."
+  exit 1
+fi
+
+echo "Starting Minikube cluster..."
+minikube start
+
+echo "Verifying Kubernetes cluster..."
+kubectl cluster-info
+
+echo "Checking available Kubernetes pods..."
+kubectl get pods --all-namespaces
+
+echo "Verifying that Django app files exist..."
+if [ ! -f "messaging_app/manage.py" ]; then
+  echo "Django project not found at messaging_app/manage.py"
+  exit 1
+fi
+
+echo "Your local Kubernetes cluster is up and ready for Django deployment!"

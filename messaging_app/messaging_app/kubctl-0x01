@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Scale to 3 replicas
+echo "Scaling the deployment..."
+kubectl scale deployment messaging-app --replicas=3
+
+# Verify pods
+echo "Checking pod status..."
+kubectl get pods
+
+# Load test with wrk (requires NodePort or Ingress setup)
+echo "Running load test using wrk..."
+wrk http://<your-app-url-or-ip>:<port>
+
+# Monitor resource usage
+echo "Monitoring pod resource usage..."
+kubectl top pods
