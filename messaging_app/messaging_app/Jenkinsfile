@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        // Optional: specify Python version if ShiningPanda is installed
-        // python 'Python 3.x'
-    }
-
     environment {
         VENV_DIR = '.venv'
     }
